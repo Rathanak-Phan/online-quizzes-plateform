@@ -49,8 +49,9 @@ export default function Register() {
 
       setMessage(res.data.message);
 
-      // Optional: redirect to login after registration
-      router.push("/login");
+      setTimeout(() => {
+        router.push("/login");
+      }, 3000);
     } catch (err) {
       let errorMessage = "Error";
       if (err instanceof AxiosError) {
