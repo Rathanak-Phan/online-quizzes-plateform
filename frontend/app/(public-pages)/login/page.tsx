@@ -1,11 +1,55 @@
 "use client";
 
-import { useState } from "react";
-import { Mail, Lock, Eye, EyeOff, Chrome, Facebook, Github } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Chrome,
+  Facebook,
+  Github,
+} from "lucide-react";
 import Link from "next/link";
+import api from "@/lib/axios";
+import { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [token, setToken] = useState("");
+  const router = useRouter();
+
+  useAuthRedirect();
+
+  const handleLogin = async () => {
+    try {
+      const res = await api.post("/api/auth/login", { email, password });
+
+      // Save token & user
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      setMessage("Login successful");
+
+      // Trigger header update
+      window.dispatchEvent(new Event("login"));
+
+      // Redirect home
+      router.push("/");
+    } catch (err) {
+      let errorMessage = "Error";
+      if (err instanceof AxiosError) {
+        errorMessage = err.response?.data?.error || err.message; // <- read "error" field
+      }
+      setMessage(errorMessage);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white px-4">
@@ -13,7 +57,6 @@ export default function Login() {
       <div className="w-full max-w-xl">
         {/* Card */}
         <div className="bg-white shadow-xl rounded-2xl p-8 backdrop-blur-sm">
-          
           {/* Logo / Title */}
           <div className="text-center mb-8">
             <div className="w-14 h-14 mx-auto bg-blue-600 rounded-xl flex items-center justify-center text-white text-3xl shadow-lg">
@@ -44,12 +87,16 @@ export default function Login() {
           <form className="space-y-5">
             {/* Email */}
             <div>
-              <label className="text-sm font-semibold text-gray-700">Email</label>
+              <label className="text-sm font-semibold text-gray-700">
+                Email
+              </label>
               <div className="relative mt-1">
                 <Mail className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
                 <input
                   type="email"
                   placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
                 />
               </div>
@@ -57,12 +104,16 @@ export default function Login() {
 
             {/* Password */}
             <div>
-              <label className="text-sm font-semibold text-gray-700">Password</label>
+              <label className="text-sm font-semibold text-gray-700">
+                Password
+              </label>
               <div className="relative mt-1">
                 <Lock className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="•••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-10 pr-10 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
                 />
                 <button
@@ -84,15 +135,31 @@ export default function Login() {
               <label className="flex items-center gap-2">
                 <input type="checkbox" /> Remember me
               </label>
-              <a href="/forgot-password" className="text-blue-600 hover:underline">
+              <a
+                href="/forgot-password"
+                className="text-blue-600 hover:underline"
+              >
                 Forgot password?
               </a>
             </div>
 
             {/* Submit button */}
-            <button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-semibold shadow-lg hover:scale-[1.02] transition">
+            <button
+              type="button"
+              onClick={handleLogin}
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-semibold shadow-lg hover:scale-[1.02] transition"
+            >
               Sign In
             </button>
+            <p
+              className={`mt-2 text-center ${
+                message === "Login successful"
+                  ? "text-green-600"
+                  : "text-red-600"
+              }`}
+            >
+              {message}
+            </p>
           </form>
 
           {/* Divider */}
@@ -120,8 +187,14 @@ export default function Login() {
           {/* Footer */}
           <p className="text-center text-sm text-gray-500 mt-8">
             By continuing, you agree to our{" "}
-            <a href="#" className="text-blue-600 hover:underline">Terms</a> and{" "}
-            <a href="#" className="text-blue-600 hover:underline">Privacy Policy</a>.
+            <a href="#" className="text-blue-600 hover:underline">
+              Terms
+            </a>{" "}
+            and{" "}
+            <a href="#" className="text-blue-600 hover:underline">
+              Privacy Policy
+            </a>
+            .
           </p>
         </div>
       </div>

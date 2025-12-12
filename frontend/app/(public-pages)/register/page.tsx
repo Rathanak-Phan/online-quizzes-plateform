@@ -12,10 +12,53 @@ import {
   Github,
 } from "lucide-react";
 import Link from "next/link";
+import api from "@/lib/axios";
+import { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
+
+  const [fullname, setFullname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("student");
+  const [comformpassword, setComformpassword] = useState("");
+  const [message, setMessage] = useState("");
+
+  const router = useRouter();
+
+  useAuthRedirect();
+
+  const handleRegister = async () => {
+    // Frontend check: passwords match
+    if (password !== comformpassword) {
+      setMessage("Passwords do not match");
+      return;
+    }
+
+    try {
+      const res = await api.post("/api/auth/register", {
+        name: fullname,
+        email,
+        password,
+        role,
+      });
+
+      setMessage(res.data.message);
+
+      // Optional: redirect to login after registration
+      router.push("/login");
+    } catch (err) {
+      let errorMessage = "Error";
+      if (err instanceof AxiosError) {
+        errorMessage = err.response?.data?.error || err.message; // backend sends 'error'
+      }
+      setMessage(errorMessage);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white px-4">
@@ -25,7 +68,7 @@ export default function Register() {
           <div className="text-center mb-8">
             <div className="w-14 h-14 mx-auto bg-blue-600 rounded-xl flex items-center justify-center text-white text-3xl shadow-lg">
               <Link href="/">
-                <img src="/logo.png" alt="Logo" className="w-14 h-14"/>
+                <img src="/logo.png" alt="Logo" className="w-14 h-14" />
               </Link>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mt-4">
@@ -61,6 +104,8 @@ export default function Register() {
                 <input
                   type="text"
                   placeholder="John Doe"
+                  value={fullname}
+                  onChange={(e) => setFullname(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
                 />
               </div>
@@ -76,6 +121,8 @@ export default function Register() {
                 <input
                   type="email"
                   placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
                 />
               </div>
@@ -91,6 +138,8 @@ export default function Register() {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-10 pr-10 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
                 />
                 <button
@@ -117,6 +166,8 @@ export default function Register() {
                 <input
                   type={showPassword2 ? "text" : "password"}
                   placeholder="••••••••"
+                  value={comformpassword}
+                  onChange={(e) => setComformpassword(e.target.value)}
                   className="w-full pl-10 pr-10 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
                 />
                 <button
@@ -134,9 +185,20 @@ export default function Register() {
             </div>
 
             {/* Button */}
-            <button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-semibold shadow-lg hover:scale-[1.02] transition">
+            <button
+              type="button"
+              onClick={handleRegister}
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-semibold shadow-lg hover:scale-[1.02] transition"
+            >
               Create Account
             </button>
+            <p
+              className={`mt-2 text-center ${
+                message.includes("success") ? "text-green-600" : "text-red-500"
+              }`}
+            >
+              {message}
+            </p>
           </form>
 
           {/* Divider */}
