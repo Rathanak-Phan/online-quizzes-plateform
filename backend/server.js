@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/api", (req, res) => {
-  res.send("Welcome to my data from backend...develop");
+  res.send("Welcome to my data from backend...add new");
 });
 
 // Add your auth routes
