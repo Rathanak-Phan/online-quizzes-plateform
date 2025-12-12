@@ -18,6 +18,7 @@ import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,8 +33,13 @@ export default function Login() {
       const res = await api.post("/api/auth/login", { email, password });
 
       // Save token & user
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      if (rememberMe) {
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+      } else {
+        sessionStorage.setItem("token", res.data.token);
+        sessionStorage.setItem("user", JSON.stringify(res.data.user));
+      }
 
       setMessage("Login successful");
 
@@ -133,7 +139,12 @@ export default function Login() {
             {/* Remember + Forgot */}
             <div className="flex justify-between text-sm">
               <label className="flex items-center gap-2">
-                <input type="checkbox" /> Remember me
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                Remember me
               </label>
               <a
                 href="/forgot-password"
