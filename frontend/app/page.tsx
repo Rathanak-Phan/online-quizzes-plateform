@@ -1,6 +1,6 @@
+// app/page.tsx
 "use client";
-
-import PublicLayout from "./(public-pages)/layout"; // Wrap homepage with your PublicLayout
+import PublicLayout from "./(public-pages)/layout";
 import api from "@/lib/axios";
 import { useEffect, useState } from "react";
 
@@ -17,8 +17,8 @@ export default function RootHomePage() {
   return (
     <PublicLayout>
       <div className="p-4 text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Online Quizzes!</h1>
-        <p className="text-lg">{message}</p>
+        <h1 className="text-4xl">Hello Frontend</h1>
+        <p>{message}</p>
       </div>
     </PublicLayout>
   );
