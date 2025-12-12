@@ -12,7 +12,7 @@ export default function HomePage() {
     api
       .get("/api")
       .then((res) => setMessage(res.data))
-      .catch(() => setMessage("⚠️ Backend is offline"));
+      .catch(() => setMessage("⚠️ Backend is offline..."));
 
   }, []);
 
