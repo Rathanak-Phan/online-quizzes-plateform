@@ -1,22 +1,25 @@
 "use client";
 
+import PublicLayout from "./layout";
 import api from "@/lib/axios";
 import { useEffect, useState } from "react";
 
-export default function Home() {
+export default function HomePage() {
   const [message, setMessage] = useState("loading...");
 
   useEffect(() => {
     api
       .get("/api")
       .then((res) => setMessage(res.data))
-      .catch(() => setMessage("⚠️ Backend is offline"));
+      .catch(() => setMessage("⚠️ Backend is offline..."));
   }, []);
 
   return (
-    <div className="p-4">
-      <p className="text-4xl text-center">Hello frontend</p>
-      <p className="text-center">{message}</p>
-    </div>
+    <PublicLayout>
+      <div>
+        {/* <h1 className="text-4xl">Hello Frontend</h1>
+        <p>{message}</p> */}
+      </div>
+    </PublicLayout>
   );
 }
