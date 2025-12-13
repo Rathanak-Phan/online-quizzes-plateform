@@ -13,6 +13,7 @@ export default function Header() {
     role: string;
   } | null>(null);
   const router = useRouter();
+  const [loggingOut, setLoggingOut] = useState(false);
 
   // Update user state on login/logout
   useEffect(() => {
@@ -34,11 +35,15 @@ export default function Header() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
-    window.dispatchEvent(new Event("logout"));
-    router.push("/login");
+    setLoggingOut(true); // trigger fade
+    setTimeout(() => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
+      window.dispatchEvent(new Event("logout"));
+      router.push("/");
+    }, 1000);
   };
 
   return (
