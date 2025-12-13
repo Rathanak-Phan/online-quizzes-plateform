@@ -18,7 +18,7 @@ export default function RootHomePage() {
     <div>
       <Header />
       <div className="p-4 text-center">
-        <h1 className="text-4xl">Hello Frontend</h1>
+        <h1 className="text-4xl">Hello Frontend </h1>
         <p>{message}</p>
       </div>
     </div>
