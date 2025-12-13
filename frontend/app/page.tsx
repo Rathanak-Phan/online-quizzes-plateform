@@ -52,7 +52,7 @@ export default function RootHomePage() {
           {user ? (
             <p className="text-blue-400">Welcome, {user.name}!</p>
           ) : (
-            <p className="text-red-500">Please login to see your name.</p>
+            <p className="text-red-500">Please login to see your name...</p>
           )}
         </div>
       </div>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Mail } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -15,7 +16,14 @@ export default function ForgotPassword() {
           <div className="text-center mb-8">
             <div className="w-14 h-14 mx-auto bg-blue-600 rounded-xl flex items-center justify-center text-white text-3xl shadow-lg">
               <Link href="/">
-                <img src="/logo.png" alt="Logo" className="w-14 h-14" />
+                <Image
+                  src="/logo.png"
+                  alt="Logo"
+                  width={56} // 14 * 4 = 56px
+                  height={56} // height same as width
+                  className="rounded-xl"
+                  priority
+                />
               </Link>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mt-4">

@@ -15,6 +15,7 @@ import api from "@/lib/axios";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
+import Image from "next/image";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -67,7 +68,14 @@ export default function Login() {
           <div className="text-center mb-8">
             <div className="w-14 h-14 mx-auto bg-blue-600 rounded-xl flex items-center justify-center text-white text-3xl shadow-lg">
               <Link href="/">
-                <img src="/logo.png" alt="Logo" className="w-14 h-14" />
+                <Image
+                  src="/logo.png"
+                  alt="Logo"
+                  width={56} 
+                  height={56}
+                  className="rounded-xl"
+                  priority
+                />
               </Link>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mt-4">QuizMaster</h1>
