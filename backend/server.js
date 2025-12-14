@@ -25,6 +25,17 @@ app.get("/api", (req, res) => {
 // Auth routes
 app.use("/api", authRoutes);
 
+// Test DB route
+app.get("/db-test", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT NOW()");
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Dynamic port for local or Render
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
