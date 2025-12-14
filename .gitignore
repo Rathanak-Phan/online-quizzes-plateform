@@ -1,0 +1,38 @@
+# ========================
+# Root
+# ========================
+node_modules/
+.env
+
+# ========================
+# Backend
+# ========================
+backend/node_modules/
+backend/.env
+
+# ========================
+# Frontend
+# ========================
+frontend/node_modules/
+frontend/.env
+frontend/.env.local
+
+# Next.js build
+frontend/.next/
+frontend/out/
+
+# Vue build
+frontend/dist/
+frontend/.vite/
+
+# ========================
+# Logs
+# ========================
+*.log
+
+# ========================
+# OS / Editor
+# ========================
+.DS_Store
+Thumbs.db
+.vscode/
