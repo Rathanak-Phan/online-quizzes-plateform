@@ -33,15 +33,15 @@ app.get("/api", (req, res) => {
 app.use("/api", authRoutes);
 
 // DB test route
-app.get("/db-test", async (req, res) => {
+app.get("/db-user-test", async (req, res) => {
   try {
-    const result = await db.query("SELECT NOW()");
+    const result = await db.query("SELECT current_user, session_user, current_database();");
     res.json(result.rows[0]);
   } catch (err) {
-    console.error("DB Error:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // Start server
 const PORT = process.env.PORT || 5000;

@@ -44,15 +44,15 @@ export default function Login() {
 
       setMessage("Login successful");
 
-      // Trigger header update
+      // Notify homepage to update user state
       window.dispatchEvent(new Event("login"));
 
-      // Redirect home
+      // Redirect to homepage
       router.push("/");
     } catch (err) {
       let errorMessage = "Error";
       if (err instanceof AxiosError) {
-        errorMessage = err.response?.data?.error || err.message; // <- read "error" field
+        errorMessage = err.response?.data?.error || err.message;
       }
       setMessage(errorMessage);
     }
@@ -71,7 +71,7 @@ export default function Login() {
                 <Image
                   src="/logo.png"
                   alt="Logo"
-                  width={56} 
+                  width={56}
                   height={56}
                   className="rounded-xl"
                   priority

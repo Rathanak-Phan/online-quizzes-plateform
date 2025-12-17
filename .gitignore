@@ -17,6 +17,7 @@ backend/.render.com
 frontend/node_modules/
 frontend/.env
 frontend/.env.local
+frontend/.env.production
 
 # Next.js build
 frontend/.next/
