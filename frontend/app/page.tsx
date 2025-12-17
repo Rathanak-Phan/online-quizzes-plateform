@@ -1,16 +1,23 @@
 // app/page.tsx
 "use client";
 
+import { useEffect, useState } from "react";
 import Header from "@/components/ui/header";
 import api from "@/lib/axios";
-import { useEffect, useState } from "react";
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+}
 
 export default function RootHomePage() {
   const [message, setMessage] = useState("loading...");
-  const [user, setUser] = useState<{ name: string } | null>(null);
-  const [loggingOut, setLoggingOut] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loadingUser, setLoadingUser] = useState(true);
 
-  // Check backend
+  // Check backend status
   useEffect(() => {
     api
       .get("/api")
@@ -18,16 +25,49 @@ export default function RootHomePage() {
       .catch(() => setMessage("⚠️ Backend is offline..."));
   }, []);
 
-  // Load logged-in user and listen for login/logout events
+  // Load logged-in user
   useEffect(() => {
-    const updateUser = () => {
-      const storedUser =
-        JSON.parse(localStorage.getItem("user") || "null") ||
-        JSON.parse(sessionStorage.getItem("user") || "null");
-      setUser(storedUser);
+    const fetchUser = async () => {
+      const token =
+        localStorage.getItem("token") || sessionStorage.getItem("token"); // <- check both
+      if (!token) {
+        setUser(null);
+        setLoadingUser(false);
+        return;
+      }
+
+      try {
+        const res = await api.get("/api/auth/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(res.data.user);
+      } catch (err) {
+        console.error("Not logged in or invalid token", err);
+        setUser(null);
+      } finally {
+        setLoadingUser(false);
+      }
     };
 
-    updateUser(); // initial check
+    fetchUser();
+
+    const updateUser = async () => {
+      const token =
+        localStorage.getItem("token") || sessionStorage.getItem("token");
+      if (!token) {
+        setUser(null);
+        return;
+      }
+      try {
+        const res = await api.get("/api/auth/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(res.data.user);
+      } catch {
+        setUser(null);
+      }
+    };
+
     window.addEventListener("login", updateUser);
     window.addEventListener("logout", updateUser);
 
@@ -38,23 +78,26 @@ export default function RootHomePage() {
   }, []);
 
   return (
-    <div
-      className={`transition-opacity duration-500 ${
-        loggingOut ? "opacity-0" : "opacity-100"
-      }`}
-    >
+    <div className={`transition-opacity duration-500`}>
       <Header />
+
       <div className="p-4 text-center">
         <h1 className="text-4xl">Hello Frontend</h1>
         <p>{message}</p>
 
-        <div className="text-4xl my-5">
-          {user ? (
-            <p className="text-blue-400">Welcome, {user.name}!</p>
-          ) : (
-            <p className="text-red-500">Please login to see your name...</p>
-          )}
-        </div>
+        {loadingUser ? (
+          <p className="text-gray-500 my-5">Loading user...</p>
+        ) : user ? (
+          <div className="text-blue-400 my-5">
+            <p>Welcome, {user.name}!</p>
+            <p>Email: {user.email}</p>
+            <p>Role: {user.role}</p>
+          </div>
+        ) : (
+          <p className="text-red-500 text-2xl my-5">
+            Please login to see your info...
+          </p>
+        )}
       </div>
     </div>
   );
