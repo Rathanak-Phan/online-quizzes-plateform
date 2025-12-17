@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Header from "@/components/ui/header";
+import Header from "@/app/components/ui/header";
 import api from "@/lib/axios";
 
 interface User {
