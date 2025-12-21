@@ -1,17 +1,23 @@
 import jwt from "jsonwebtoken";
 
 export const auth = (req, res, next) => {
-  const header = req.headers.authorization;
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ message: "No token provided" });
 
-  if (!header) return res.status(401).json({ error: "Access denied" });
-
-  const token = header.split(" ")[1];
-
+  const token = authHeader.split(" ")[1];
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Save user info to req
+    req.user = decoded;
     next();
-  } catch {
-    res.status(401).json({ error: "Invalid token" });
+  } catch (err) {
+    res.status(401).json({ message: "Invalid token" });
   }
+};
+
+// Role-based middleware
+export const requireRole = (roles) => (req, res, next) => {
+  if (!roles.includes(req.user.role)) {
+    return res.status(403).json({ message: "Access denied" });
+  }
+  next();
 };

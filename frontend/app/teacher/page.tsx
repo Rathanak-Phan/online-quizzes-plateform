@@ -6,7 +6,7 @@ import {
   BookOpen, AlertCircle, Bell
 } from "lucide-react";
 
-export default function TeacherDashboard() {
+export default function Teacher() {
   const [activeTab, setActiveTab] = useState("quizzes");
   const [searchQuery, setSearchQuery] = useState("");
 

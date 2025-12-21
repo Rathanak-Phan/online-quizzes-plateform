@@ -16,4 +16,12 @@ export const userModels = {
     );
     return result.rows[0];
   },
+
+  updateProfileImage: async (userId, imagePath) => {
+    const result = await db.query(
+      "UPDATE users SET profile_image=$1 WHERE id=$2 RETURNING *",
+      [imagePath, userId]
+    );
+    return result.rows[0];
+  }
 };

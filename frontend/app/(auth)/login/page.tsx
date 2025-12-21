@@ -33,13 +33,21 @@ export default function Login() {
     try {
       const res = await api.post("/api/auth/login", { email, password });
 
+      // Fix profile image URL
+      const userWithImage = {
+        ...res.data.user,
+        profile_image: res.data.user.profile_image
+          ? `http://localhost:5000${res.data.user.profile_image}`
+          : "/avatar-default.png", // fallback image
+      };
+
       // Save token & user
       if (rememberMe) {
         localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+        localStorage.setItem("user", JSON.stringify(userWithImage));
       } else {
         sessionStorage.setItem("token", res.data.token);
-        sessionStorage.setItem("user", JSON.stringify(res.data.user));
+        sessionStorage.setItem("user", JSON.stringify(userWithImage));
       }
 
       setMessage("Login successful");

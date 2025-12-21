@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { db } from "./src/config/db.js";
 import authRoutes from "./src/routes/authRoutes.js";
+import path from "path";
 
 dotenv.config();
 const app = express();
@@ -31,6 +32,9 @@ app.get("/api", (req, res) => {
 
 // Auth routes
 app.use("/api", authRoutes);
+
+// Serve uploads folder
+app.use("/uploads", express.static(path.join(process.cwd(), "/uploads")));
 
 // DB test route
 app.get("/db-user-test", async (req, res) => {
