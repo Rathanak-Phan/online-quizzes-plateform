@@ -20,10 +20,10 @@ export default function AdminLayout({
     const storedUser = JSON.parse(localStorage.getItem("user") || "null");
 
     // Not logged in → redirect to login
-    // if (!storedUser && pathname !== "/admin/login") {
-    //   router.replace("/admin/login");
-    //   return;
-    // }
+      // if (!storedUser && pathname !== "/admin/login") {
+      //   router.replace("/admin/login");
+      //   return;
+      // }
 
     // Logged in as admin but trying to access login → redirect to dashboard
     if (storedUser?.role === "admin" && pathname === "/admin/login") {
