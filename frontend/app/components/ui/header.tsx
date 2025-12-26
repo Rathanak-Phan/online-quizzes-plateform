@@ -107,7 +107,7 @@ export default function Header() {
             <div className="relative">
               {/* Profile Image */}
               <img
-                src={user.profileImage || "/default-profile.png"}
+                src={user.profileImage || "frontend/public/logo.png"}
                 alt={user.name}
                 className="w-10 h-10 rounded-full object-cover border-2 border-blue-600 cursor-pointer"
                 onClick={() => setOpenDropdown(!openDropdown)}
