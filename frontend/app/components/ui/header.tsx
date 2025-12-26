@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Bell } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Notification from "./notification";
 
 export default function Header() {
   const [open, setOpen] = useState(false); // mobile menu
@@ -11,9 +12,14 @@ export default function Header() {
     id: number;
     name: string;
     role: string;
+    profileImage?: string;
   } | null>(null);
+  const [openDropdown, setOpenDropdown] = useState(false); // dropdown menu
   const router = useRouter();
-  const [loggingOut, setLoggingOut] = useState(false);
+
+  const handleNotifications = () => {
+    alert("Notifications clicked!");
+  };
 
   // Update user state on login/logout
   useEffect(() => {
@@ -24,7 +30,7 @@ export default function Header() {
       setUser(storedUser);
     };
 
-    updateUser(); // initial check
+    updateUser();
     window.addEventListener("login", updateUser);
     window.addEventListener("logout", updateUser);
 
@@ -35,19 +41,27 @@ export default function Header() {
   }, []);
 
   const handleLogout = () => {
-    setLoggingOut(true); // trigger fade
-    setTimeout(() => {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      sessionStorage.removeItem("token");
-      sessionStorage.removeItem("user");
-      window.dispatchEvent(new Event("logout"));
-      router.push("/");
-    }, 1000);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
+    window.dispatchEvent(new Event("logout"));
+    router.push("/");
   };
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest(".dropdown")) {
+        setOpenDropdown(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
   return (
-    <header className="w-full bg-white shadow-sm">
+    <header className="w-full bg-white shadow-sm fixed z-100">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <div className="text-2xl font-bold text-blue-600">
@@ -70,8 +84,10 @@ export default function Header() {
           </Link>
         </nav>
 
-        {/* Buttons */}
-        <div className="hidden md:flex gap-4">
+        {/* Desktop Profile / Auth Buttons */}
+        <div className="hidden md:flex items-center gap-4 relative dropdown">
+          <Notification />
+
           {!user ? (
             <>
               <Link
@@ -88,17 +104,47 @@ export default function Header() {
               </Link>
             </>
           ) : (
-            <>
-              <span className="px-4 py-2 text-gray-700">
-                Hello, {user.name}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700"
-              >
-                Logout
-              </button>
-            </>
+            <div className="relative">
+              {/* Profile Image */}
+              <img
+                src={user.profileImage || "/default-profile.png"}
+                alt={user.name}
+                className="w-10 h-10 rounded-full object-cover border-2 border-blue-600 cursor-pointer"
+                onClick={() => setOpenDropdown(!openDropdown)}
+              />
+
+              {/* Dropdown Menu */}
+              {openDropdown && (
+                <div className="absolute right-0 mt-2 w-44 bg-white shadow-xl rounded-lg flex flex-col z-50 border border-gray-100 overflow-hidden">
+                  {/* Profile Link */}
+                  <Link
+                    href="/profile"
+                    className="px-4 py-3 hover:bg-blue-50 text-gray-800 text-sm font-medium transition-colors duration-200"
+                  >
+                    Profile
+                  </Link>
+
+                  {/* Settings Link */}
+                  <Link
+                    href="/settings"
+                    className="px-4 py-3 hover:bg-blue-50 text-gray-800 text-sm font-medium transition-colors duration-200"
+                  >
+                    Settings
+                  </Link>
+
+                  {/* Divider */}
+                  <div className="border-t border-gray-100"></div>
+
+                  {/* Logout Button */}
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-3 text-red-600 hover:bg-red-50 text-sm font-medium transition-colors duration-200 text-left"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
 
@@ -126,34 +172,40 @@ export default function Header() {
             </Link>
           </nav>
 
-          <div className="mt-4 flex flex-col gap-4">
-            {!user ? (
-              <>
-                <Link
-                  href="/login"
-                  className="w-full text-center px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/register"
-                  className="w-full text-center px-4 py-2 border border-blue-600 text-blue-600 rounded-xl hover:bg-blue-50"
-                >
-                  Register
-                </Link>
-              </>
-            ) : (
-              <>
-                <span className="text-center">{user.name}</span>
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-center px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700"
-                >
-                  Logout
-                </button>
-              </>
-            )}
-          </div>
+          {/* Mobile Profile Dropdown */}
+          {user && (
+            <div className="mt-4 flex flex-col items-center gap-2 relative dropdown">
+              <img
+                src={user.profileImage || "/default-profile.png"}
+                alt={user.name}
+                className="w-14 h-14 rounded-full object-cover border-2 border-blue-600 cursor-pointer"
+                onClick={() => setOpenDropdown(!openDropdown)}
+              />
+
+              {openDropdown && (
+                <div className="absolute top-16 right-0 w-40 bg-white shadow-lg rounded-xl flex flex-col z-50">
+                  <Link
+                    href="/profile"
+                    className="px-4 py-2 hover:bg-blue-50 text-gray-700 rounded-t-xl"
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    href="/settings"
+                    className="px-4 py-2 hover:bg-blue-50 text-gray-700"
+                  >
+                    Settings
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-b-xl text-left"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </header>

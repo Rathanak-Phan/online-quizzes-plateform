@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import Header from "@/app/components/ui/header";
 import api from "@/lib/axios";
+import HomePage from "./components/ui/home";
 
 interface User {
   id: number;
@@ -81,22 +82,27 @@ export default function RootHomePage() {
     <div className={`transition-opacity duration-500`}>
       <Header />
 
-      <div className="p-4 text-center">
-        <h1 className="text-4xl">Hello Frontend</h1>
-        <p>{message}</p>
+      <div className="text-center">
+        {/* <h1 className="text-4xl">Hello Frontend</h1> */}
+        {/* <p>{message}</p> */}
 
         {loadingUser ? (
           <p className="text-gray-500 my-5">Loading user...</p>
         ) : user ? (
-          <div className="text-blue-400 my-5">
-            <p>Welcome, {user.name}!</p>
+          <div className="text-blue-400">
+            {/* <p>Welcome, {user.name}!</p>
             <p>Email: {user.email}</p>
-            <p>Role: {user.role}</p>
+            <p>Role: {user.role}</p> */}
+            <HomePage />
           </div>
         ) : (
-          <p className="text-red-500 text-2xl my-5">
-            Please login to see your info...
-          </p>
+          <div>
+            <HomePage />
+
+            <p className="text-red-500 text-2xl my-5">
+              Please login to see your info...
+            </p>
+          </div>
         )}
       </div>
     </div>
