@@ -1,9 +1,9 @@
 "use client";
 
-import Header from "../components/admin/Header";
-import Sidebar from "../components/admin/Sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Header from "../components/admin/Header";
+import Sidebar from "../components/admin/Sidebar";
 
 export default function AdminLayout({
   children,
@@ -17,34 +17,42 @@ export default function AdminLayout({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Read user from localStorage
-    const user = JSON.parse(localStorage.getItem("user") || "null");
+    const storedUser = JSON.parse(localStorage.getItem("user") || "null");
 
-    // If not logged in and not on login page → redirect to login
-    if (!user && pathname !== "/admin/login") {
+    // Not logged in → redirect to login
+    if (!storedUser && pathname !== "/admin/login") {
       router.replace("/admin/login");
       return;
     }
 
-    // If logged in as admin and on login page → redirect to admin dashboard
-    if (user?.role === "admin" && pathname === "/admin/login") {
+    // Logged in as admin but trying to access login → redirect to dashboard
+    if (storedUser?.role === "admin" && pathname === "/admin/login") {
       router.replace("/admin");
       return;
     }
 
-    // Stop loading if checks passed
+    // Logged in but role not allowed → redirect to login
+    if (storedUser && !allowedRoles.includes(storedUser.role)) {
+      router.replace("/admin/login");
+      return;
+    }
+
+    // Done checking auth → show page
     setLoading(false);
-  }, [pathname, router]);
+  }, [pathname, router, allowedRoles]);
 
-  // Prevent rendering layout while checking auth
-  if (loading) return null;
-
-  // Login page should render children only (no sidebar/header)
-  if (pathname === "/admin/login") {
-    return <>{children}</>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-gray-500 text-lg animate-pulse">Loading...</p>
+      </div>
+    );
   }
 
-  // Admin pages
+  // Login page → render children only
+  if (pathname === "/admin/login") return <>{children}</>;
+
+  // Admin dashboard → render layout with sidebar & header
   return (
     <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
