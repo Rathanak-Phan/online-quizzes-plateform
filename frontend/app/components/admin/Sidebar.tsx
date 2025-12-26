@@ -32,7 +32,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-gray-900 text-white p-0">
+    <aside className="w-64 h-screen bg-gray-900 text-white p-0 sticky top-0 z-50">
       <div className="flex flex-col justify-between min-h-screen py-5 px-3">
         <h2 className="text-xl font-bold mb-6">Admin Panel</h2>
         <div className="flex-1">
